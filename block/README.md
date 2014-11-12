@@ -2,7 +2,6 @@
 
 ### Problem
 
-
 > Daedalus Crop has been using this script to encrypt it's data! We think this file contains a password to their command server. Can you crack it?
 
 ```python
@@ -123,30 +122,24 @@ if __name__ == "__main__":
 
 After a short inspection, I noticed that this script seemed to do some sort of block cipher with a key lenght of 3 bytes. Since the data is encrypted once with key1 and then a second time with key2, it would seem that this increased the keylength the 6 bytes. Unfortuantly the only way to break a cipher like this is through brute forcing and 6 bytes would take too long.
 
-This cipher is vulnerable to a Meet in the Middle attack. This means that in 16**6 times we can break this cipher instead of 16**12. This attack works by encrypting a plain-text with every key in the keyspace and storing those in a table. You then decreypt the matching cipher-text with every possible key until you collide with a vaule in your table.
+This cipher is vulnerable to a Meet in the Middle attack. This means that in 2\*(16\*\*6) times we can break this cipher instead of 16\*\*12. This attack works by encrypting a plain-text with every key in the keyspace and storing those in a table. You then decrypt the matching cipher-text with every possible key until you collide with a value in your table.
 
 ```python
+import block
 
-	
+table = {}
+for key_forward in range(16**6):
+    middle_for = block.encrypt_data("message: ", key_forward).encode('hex')
+    table[middle_for] = key_forward
+    if key_forward % 100000 == 0:
+        print key_forward
 
-    import block
-     
-    table = {}
-    for key_forward in range(16**6):
-        middle_for = block.encrypt_data("message: ", key_forward).encode('hex')
-        table[middle_for] = key_forward
-        if key_forward % 100000 == 0:
-            print key_forward
-     
-    for key_backward in range(16**6):
-        middle_back = block.decrypt_data("\x38\xB3\x89\x25\x3A\x84\x89\x7A\xBD", key_backward).encode('hex')
-        if key_backward % 100000 == 0:
-            print key_backward
-        if middle_back in table:
-            print "SOLUTION!!!!"
-            print key_backward
-            print table[middle_back]
-
-
-
+for key_backward in range(16**6):
+    middle_back = block.decrypt_data("\x38\xB3\x89\x25\x3A\x84\x89\x7A\xBD", key_backward).encode('hex')
+    if key_backward % 100000 == 0:
+        print key_backward
+    if middle_back in table:
+        print "SOLUTION!!!!"
+        print key_backward
+        print table[middle_back]
 ```
