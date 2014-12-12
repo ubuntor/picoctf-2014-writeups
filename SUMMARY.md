@@ -2,6 +2,5 @@
 
 * [Introduction](README.md)
 * [Block](block/README.md)
-* [Steve's List](steves_list/README.md)
 * [Hardcore ROP](hardcore_rop/README.md)
-
+* [Injection 3](injection_3/README.md)
